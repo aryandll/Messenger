@@ -1,0 +1,41 @@
+## src/main/resources/application.yml
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/media_chat
+#    username: postgres
+#    password: root
+#  jpa:
+#    hibernate:
+#      ddl-auto: update   # dev only
+#    properties:
+#      hibernate:
+#        format_sql: true
+#    show-sql: true
+#
+#server:
+#  port: 8080
+#
+#app:
+#  jwt:
+#    secret: "change-this-to-a-long-random-secret-at-least-256-bits"
+#    expiration-ms: 86400000
+
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+  jpa:
+    hibernate:
+      ddl-auto: update   # dev only; for production consider 'validate'
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
