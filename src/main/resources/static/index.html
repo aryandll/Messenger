@@ -130,7 +130,7 @@
       overflow: hidden;
     }
     .btn.primary { background: var(--accent); }
-    .btn.primary:hover { background: var(--accent-hover); transform: translateY(-2px) scale(1.04);}
+    .btn.primary:hover { background: var(--accent-hover); transform: translateY(-2px) scale(1.04); }
     .btn.danger { background: var(--danger); }
     .btn.ghost {
       background: transparent; border: 1px solid var(--border); color: var(--muted);
@@ -184,10 +184,10 @@
       backdrop-filter: blur(4px);
     }
     .msg.mine { align-self: flex-end; background: var(--mine); color: #fff; }
-    .msg.theirs { align-self: flex-start; background: var(--theirs); color: var(--text);}
+    .msg.theirs { align-self: flex-start; background: var(--theirs); color: var(--text); }
     .msg .meta { font-size: 12px; color: #e2f1ff; opacity: 0.9; display: flex; gap: 8px; align-items: center; }
     .msg.mine .meta { color: #d2eaff; }
-    .msg.theirs .meta { color: var(--muted);}
+    .msg.theirs .meta { color: var(--muted); }
     .msg .actions {
       position: absolute; top: -8px; right: -8px; display: none;
     }
@@ -629,13 +629,21 @@
       const res = await fetch(API_BASE + path, {
         method, headers, body: body ? JSON.stringify(body) : undefined
       });
-      if (!res.ok) {
-        let msg = `${res.status} ${res.statusText}`;
-        try { msg = (await res.text()) || msg; } catch {}
-        throw new Error(msg);
-      }
+      // read text safely
+      const text = await res.text().catch(()=>'');
       const ct = res.headers.get('content-type') || '';
-      return ct.includes('application/json') ? res.json() : null;
+      let parsed = null;
+      if (text && ct.includes('application/json')) {
+        try { parsed = JSON.parse(text); } catch {}
+      }
+      if (!res.ok) {
+        const msg = (parsed && parsed.message) ? parsed.message : (text || `${res.status} ${res.statusText}`);
+        const err = new Error(msg);
+        err.status = res.status;
+        err.body = parsed || text;
+        throw err;
+      }
+      return ct.includes('application/json') ? (parsed || (text ? JSON.parse(text) : {})) : null;
     }
     function fmtTime(ts) {
       if (!ts) return '';
@@ -749,7 +757,7 @@
         showToast('Signed up');
       } catch (e) {
         setStatus('');
-        showToast('Signup failed: ' + e.message);
+        showToast('Signup failed: ' + (e && e.message ? e.message : 'unknown error'));
       }
     }
     async function login() {
@@ -765,7 +773,15 @@
         showToast('Logged in');
       } catch (e) {
         setStatus('');
-        showToast('Login failed: ' + e.message);
+        if (e && e.status === 401) {
+          // common case: wrong credentials
+          showToast('Invalid username or password');
+        } else if (e && e.status === 404) {
+          // user not found
+          showToast('User not found');
+        } else {
+          showToast('Login failed: ' + (e && e.message ? e.message : 'unknown error'));
+        }
       }
     }
     async function onAuthenticated() {
@@ -803,7 +819,7 @@
         const list = await http('GET', '/api/users/search?q=' + encodeURIComponent(q || ''));
         renderUsers(list.filter(u => u.id !== me.id));
       } catch (e) {
-        showToast('Search failed: ' + e.message);
+        showToast('Search failed: ' + (e && e.message ? e.message : 'unknown error'));
       }
     }
     async function selectPeer(id, username) {
@@ -837,7 +853,7 @@
         }
       } catch (e) {
         setStatus('');
-        showToast('Load messages failed: ' + e.message);
+        showToast('Load messages failed: ' + (e && e.message ? e.message : 'unknown error'));
       }
     }
 
@@ -875,7 +891,7 @@
         // mark tmp message as failed
         messages = messages.map(m => m.id === tmpId ? ({ ...m, sending:false, failed:true }) : m);
         renderMessages();
-        showToast('Send failed: ' + e.message);
+        showToast('Send failed: ' + (e && e.message ? e.message : 'unknown error'));
       }
     }
 
@@ -885,7 +901,7 @@
         messages = messages.filter(m => m.id !== id);
         renderMessages();
       } catch (e) {
-        showToast('Delete failed: ' + e.message);
+        showToast('Delete failed: ' + (e && e.message ? e.message : 'unknown error'));
       }
     }
     async function markRead(ids) {
@@ -1077,4 +1093,3 @@
   </script>
 </body>
 </html>
-
