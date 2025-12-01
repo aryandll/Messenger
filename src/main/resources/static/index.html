@@ -114,13 +114,13 @@
     .me-email { color: var(--muted); font-size: 13px; }
     .field { margin: 12px 0; }
     .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-    .field input {
+    .field input, .field textarea {
       width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border);
       background: #f9f9fa; color: var(--text); font-size: 16px;
       transition: border 0.2s, box-shadow 0.2s;
       box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
-    .field input:focus { border-color: var(--accent); outline: none; box-shadow: 0 2px 8px #0071e322;}
+    .field input:focus, .field textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 2px 8px #0071e322;}
     .btn {
       border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; color: #fff;
       background: var(--accent-2); font-size: 16px; font-weight: 500;
@@ -199,6 +199,7 @@
       box-shadow: 0 1px 2px rgba(0,0,0,0.08);
     }
     .msg .content { white-space: pre-wrap; }
+    .msg .status-dot { font-size: 12px; opacity: 0.9; }
     .composer {
       display: grid; grid-template-columns: 1fr auto auto; gap: 12px; padding: 24px 32px; border-top: 1px solid var(--border);
       background: var(--apple-panel); border-radius: var(--radius) var(--radius) 0 0; box-shadow: var(--shadow);
@@ -206,12 +207,12 @@
       position: relative;
       backdrop-filter: blur(var(--blur));
     }
-    .composer input {
+    .composer textarea {
       width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--border);
       background: #f9f9fa; color: var(--text); font-size: 16px;
-      transition: border 0.2s;
+      transition: border 0.2s; resize: none; overflow: auto; min-height: 44px;
     }
-    .composer input:focus { border-color: var(--accent); outline: none; }
+    .composer textarea:focus { border-color: var(--accent); outline: none; }
     .emoji-picker {
       position: absolute;
       bottom: 60px;
@@ -273,6 +274,25 @@
       animation: fadeinUp 1.7s;
     }
 
+    /* TOAST */
+    .toast {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 28px;
+      background: rgba(30,30,30,0.95);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      font-size: 14px;
+      z-index: 60;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(-4px); }
+
     /* MOBILE / RESPONSIVE */
     .mobile-overlay {
       position: fixed;
@@ -327,96 +347,98 @@
 <body>
   <nav class="apple-nav">
     <div class="left" style="display:flex;align-items:center;gap:12px;">
-      <button id="btn-toggle-sidebar" class="mobile-menu-btn" aria-label="Open menu">☰</button>
+      <button id="btn-toggle-sidebar" class="mobile-menu-btn" aria-label="Open menu" type="button">☰</button>
       <span class="apple-logo">QuickChat</span>
     </div>
     <div style="font-size:13px;color:var(--muted);font-weight:500;">Fast & simple messaging</div>
   </nav>
 
-  <div id="mobile-overlay" class="mobile-overlay hidden"></div>
+  <div id="mobile-overlay" class="mobile-overlay hidden" aria-hidden="true"></div>
 
   <div id="welcome-section" class="welcome-section">
     <div class="welcome-title">Welcome to QuickChat</div>
     <div class="welcome-desc">Connect, chat, and share emojis instantly.<br>Start by logging in or creating an account.</div>
     <div class="welcome-btns">
-      <button id="btn-show-login" class="btn primary">Login</button>
-      <button id="btn-show-signup" class="btn">Signup</button>
+      <button id="btn-show-login" class="btn primary" type="button">Login</button>
+      <button id="btn-show-signup" class="btn" type="button">Signup</button>
     </div>
   </div>
 
-  <div id="app" class="hidden">
+  <div id="app" class="hidden" aria-live="polite">
     <!-- LEFT SIDEBAR -->
-    <aside id="sidebar" class="sidebar">
-      <div id="login-section" class="card hidden">
+    <aside id="sidebar" class="sidebar" aria-label="Sidebar">
+      <div id="login-section" class="card hidden" aria-hidden="true">
         <h3 style="font-weight:600;font-size:20px;margin-bottom:8px;">Login</h3>
         <div class="field">
-          <label>Username</label>
+          <label for="login-username">Username</label>
           <input id="login-username" type="text" placeholder="e.g. aryan" />
         </div>
         <div class="field">
-          <label>Password</label>
+          <label for="login-password">Password</label>
           <input id="login-password" type="password" placeholder="••••••" />
         </div>
-        <button id="btn-login" class="btn primary">Login</button>
-        <div class="divider"><button id="btn-switch-signup" class="btn ghost small">Create account</button></div>
+        <button id="btn-login" class="btn primary" type="button">Login</button>
+        <div class="divider"><button id="btn-switch-signup" class="btn ghost small" type="button">Create account</button></div>
       </div>
-      <div id="signup-section" class="card hidden">
+      <div id="signup-section" class="card hidden" aria-hidden="true">
         <h3 style="font-weight:600;font-size:20px;margin-bottom:8px;">Signup</h3>
         <div class="field">
-          <label>Username</label>
+          <label for="signup-username">Username</label>
           <input id="signup-username" type="text" placeholder="unique handle" />
         </div>
         <div class="field">
-          <label>Email</label>
+          <label for="signup-email">Email</label>
           <input id="signup-email" type="email" placeholder="you@example.com" />
         </div>
         <div class="field">
-          <label>Password</label>
+          <label for="signup-password">Password</label>
           <input id="signup-password" type="password" placeholder="••••••" />
         </div>
-        <button id="btn-signup" class="btn primary">Create account</button>
-        <div class="divider"><button id="btn-switch-login" class="btn ghost small">Back to login</button></div>
+        <button id="btn-signup" class="btn primary" type="button">Create account</button>
+        <div class="divider"><button id="btn-switch-login" class="btn ghost small" type="button">Back to login</button></div>
       </div>
 
-      <div id="me-section" class="card hidden">
+      <div id="me-section" class="card hidden" aria-hidden="true">
         <div class="me-row">
           <div>
             <div class="me-username" id="me-username">@me</div>
             <div class="me-email" id="me-email"></div>
           </div>
-          <button id="btn-logout" class="btn danger small">Logout</button>
+          <button id="btn-logout" class="btn danger small" type="button">Logout</button>
         </div>
         <div class="field">
-          <label>Search users</label>
+          <label for="search-input">Search users</label>
           <input id="search-input" type="text" placeholder="type to search..." />
         </div>
-        <div id="users-list" class="list"></div>
+        <div id="users-list" class="list" role="list"></div>
       </div>
     </aside>
 
     <!-- MAIN CHAT AREA -->
-    <main class="main">
+    <main class="main" role="main">
       <header class="chat-header">
         <div class="left">
           <div id="chat-title" class="chat-title">Select a user</div>
-          <div id="typing-indicator" class="typing hidden">typing…</div>
+          <div id="typing-indicator" class="typing hidden" aria-hidden="true">typing…</div>
         </div>
-        <div id="status" class="status"></div>
+        <div id="status" class="status" aria-live="polite"></div>
       </header>
 
-      <section class="messages-area">
-        <button id="btn-load-more" class="btn ghost small hidden">Load more</button>
-        <div id="messages" class="messages"></div>
+      <section class="messages-area" aria-live="polite">
+        <button id="btn-load-more" class="btn ghost small hidden" type="button">Load more</button>
+        <div id="messages" class="messages" role="list"></div>
       </section>
 
-      <footer class="composer">
-        <input id="message-input" type="text" placeholder="Type a message…" disabled />
-        <button id="btn-emoji" class="btn ghost" title="Insert emoji" style="padding:0 12px;font-size:22px;">😊</button>
-        <button id="btn-send" class="btn primary" disabled>Send</button>
-        <div id="emoji-picker" class="emoji-picker"></div>
+      <footer class="composer" role="contentinfo">
+        <textarea id="message-input" rows="1" placeholder="Type a message…" disabled aria-label="Message input"></textarea>
+        <button id="btn-emoji" class="btn ghost" title="Insert emoji" type="button" aria-label="Open emoji picker" style="padding:0 12px;font-size:22px;">😊</button>
+        <button id="btn-send" class="btn primary" disabled type="button" aria-label="Send message">Send</button>
+        <div id="emoji-picker" class="emoji-picker" aria-hidden="true"></div>
       </footer>
     </main>
   </div>
+
+  <div id="toast" class="toast" role="status" aria-live="assertive"></div>
 
   <script>
     // =========================
@@ -426,11 +448,13 @@
     const API_BASE = SAME_ORIGIN ? '' : 'http://localhost:8080';
     const WS_URL   = SAME_ORIGIN ? '/ws' : 'http://localhost:8080/ws';
     const PAGE_SIZE = 20;
+
     // =========================
     // STATE
     // =========================
     let token = null;
     let stomp = null;
+    let sock = null;
     let me = null;
     let currentPeer = null;
     let currentPage = 0;
@@ -438,6 +462,12 @@
     let isLastPage = false;
     let messages = [];
     let typingTimer = null;
+
+    // WS reconnect/backoff
+    let wsBackoff = 500;
+    const wsMaxBackoff = 30000;
+    let wsReconnectTimer = null;
+
     // =========================
     // DOM
     // =========================
@@ -470,6 +500,7 @@
     const sidebar        = el('sidebar');
     const btnToggleSidebar = el('btn-toggle-sidebar');
     const mobileOverlay  = el('mobile-overlay');
+    const toastEl        = el('toast');
 
     // =========================
     // EMOJI PICKER (original set)
@@ -490,23 +521,42 @@
           messageInput.value += e;
           emojiPicker.style.display = 'none';
           messageInput.focus();
+          autosizeTextarea();
         };
         emojiPicker.appendChild(span);
       });
     }
     emojiBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       if (emojiPicker.style.display === 'block') {
         emojiPicker.style.display = 'none';
+        emojiPicker.setAttribute('aria-hidden', 'true');
       } else {
         renderEmojiPicker();
         emojiPicker.style.display = 'block';
+        emojiPicker.setAttribute('aria-hidden', 'false');
       }
     });
     document.addEventListener('click', (e) => {
       if (!emojiPicker.contains(e.target) && e.target !== emojiBtn) {
         emojiPicker.style.display = 'none';
+        emojiPicker.setAttribute('aria-hidden', 'true');
       }
     });
+
+    // =========================
+    // TOAST
+    // =========================
+    let toastTimer = null;
+    function showToast(msg, ms = 3500) {
+      if (!toastEl) return;
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, ms);
+    }
 
     // =========================
     // MOBILE SIDEBAR HANDLING
@@ -515,18 +565,19 @@
       sidebar.classList.add('open');
       mobileOverlay.classList.remove('hidden');
       mobileOverlay.classList.add('show');
+      mobileOverlay.setAttribute('aria-hidden', 'false');
     }
     function closeSidebar() {
       sidebar.classList.remove('open');
       mobileOverlay.classList.remove('show');
       mobileOverlay.classList.add('hidden');
+      mobileOverlay.setAttribute('aria-hidden', 'true');
     }
     btnToggleSidebar.addEventListener('click', () => {
       if (sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
     });
     mobileOverlay.addEventListener('click', closeSidebar);
 
-    // Close sidebar automatically when picking a user (mobile)
     function closeSidebarIfMobile() {
       if (window.innerWidth <= 900) closeSidebar();
     }
@@ -621,6 +672,7 @@
         const item = document.createElement('div');
         item.className = 'user-item';
         item.onclick = () => { selectPeer(u.id, u.username); closeSidebarIfMobile(); };
+        item.setAttribute('role','listitem');
         const name = document.createElement('div');
         name.className = 'user-name';
         name.textContent = u.username;
@@ -631,9 +683,10 @@
     function renderMessages() {
       messagesBox.innerHTML = '';
       messages.forEach(m => {
-        const mine = m.senderId === me.id;
+        const mine = m.senderId === me?.id;
         const wrapper = document.createElement('div');
         wrapper.className = 'msg ' + (mine ? 'mine' : 'theirs');
+        wrapper.setAttribute('role','listitem');
         const content = document.createElement('div');
         content.className = 'content';
         content.textContent = m.content;
@@ -642,21 +695,36 @@
         const time = document.createElement('span');
         time.textContent = fmtTime(m.createdAt);
         meta.appendChild(time);
-        if (mine) {
+
+        if (m.sending) {
+          const s = document.createElement('span');
+          s.className = 'status-dot';
+          s.textContent = ' • Sending…';
+          meta.appendChild(s);
+        } else if (m.failed) {
+          const f = document.createElement('span');
+          f.className = 'status-dot';
+          f.textContent = ' • Failed';
+          f.style.color = 'var(--danger)';
+          meta.appendChild(f);
+        } else if (mine) {
           const status = document.createElement('span');
-          if (m.readAt) status.textContent = '✓✓ Read';
-          else if (m.deliveredAt) status.textContent = '✓ Delivered';
-          else status.textContent = '• Sent';
+          if (m.readAt) status.textContent = ' ✓✓ Read';
+          else if (m.deliveredAt) status.textContent = ' ✓ Delivered';
+          else status.textContent = ' • Sent';
           meta.appendChild(status);
         }
+
         const actions = document.createElement('div');
         actions.className = 'actions';
         const del = document.createElement('button');
         del.className = 'action-btn';
         del.textContent = '🗑️';
         del.title = 'Delete for me';
+        del.type = 'button';
         del.onclick = () => deleteMessage(m.id);
         actions.appendChild(del);
+
         wrapper.appendChild(actions);
         wrapper.appendChild(content);
         wrapper.appendChild(meta);
@@ -679,8 +747,10 @@
         saveToken(resp.token);
         await onAuthenticated();
         closeSidebarIfMobile();
+        showToast('Signed up');
       } catch (e) {
-        setStatus('Signup failed: ' + e.message);
+        setStatus('');
+        showToast('Signup failed: ' + e.message);
       }
     }
     async function login() {
@@ -693,8 +763,10 @@
         saveToken(resp.token);
         await onAuthenticated();
         closeSidebarIfMobile();
+        showToast('Logged in');
       } catch (e) {
-        setStatus('Login failed: ' + e.message);
+        setStatus('');
+        showToast('Login failed: ' + e.message);
       }
     }
     async function onAuthenticated() {
@@ -709,7 +781,8 @@
     }
     function logout() {
       try { if (stomp && stomp.connected) stomp.disconnect(() => {}); } catch {}
-      stomp = null;
+      try { if (sock && sock.close) sock.close(); } catch {}
+      stomp = null; sock = null;
       me = null;
       currentPeer = null;
       clearToken();
@@ -724,10 +797,15 @@
       showLogin();
       setStatus('Logged out');
       closeSidebar();
+      showToast('Logged out');
     }
     async function searchUsers(q) {
-      const list = await http('GET', '/api/users/search?q=' + encodeURIComponent(q || ''));
-      renderUsers(list.filter(u => u.id !== me.id));
+      try {
+        const list = await http('GET', '/api/users/search?q=' + encodeURIComponent(q || ''));
+        renderUsers(list.filter(u => u.id !== me.id));
+      } catch (e) {
+        showToast('Search failed: ' + e.message);
+      }
     }
     async function selectPeer(id, username) {
       currentPeer = { id, username };
@@ -739,49 +817,76 @@
       if (!currentPeer) return;
       if (page === lastLoadedPage) return;
       setStatus('Loading messages...');
-      const resp = await http('GET',
-        `/api/messages/conversation/${currentPeer.id}?page=${page}&size=${PAGE_SIZE}`
-      );
-      lastLoadedPage = page;
-      isLastPage = resp.last;
-      messages = dedupeById(messages.concat(resp.content));
-      renderMessages();
-      setStatus('');
-      const hide = (resp.page === 0 && resp.content.length === 0) || isLastPage;
-      btnLoadMore.classList.toggle('hidden', hide);
-      const toMark = [];
-      for (const m of messages) {
-        const incoming = (m.senderId === currentPeer.id && m.receiverId === me.id);
-        if (incoming && !m.readAt) toMark.push(m.id);
-      }
-      if (toMark.length > 0) {
-        await markRead(toMark);
+      try {
+        const resp = await http('GET',
+          `/api/messages/conversation/${currentPeer.id}?page=${page}&size=${PAGE_SIZE}`
+        );
+        lastLoadedPage = page;
+        isLastPage = resp.last;
+        messages = dedupeById(messages.concat(resp.content));
+        renderMessages();
+        setStatus('');
+        const hide = (resp.page === 0 && resp.content.length === 0) || isLastPage;
+        btnLoadMore.classList.toggle('hidden', hide);
+        const toMark = [];
+        for (const m of messages) {
+          const incoming = (m.senderId === currentPeer.id && m.receiverId === me.id);
+          if (incoming && !m.readAt) toMark.push(m.id);
+        }
+        if (toMark.length > 0) {
+          await markRead(toMark);
+        }
+      } catch (e) {
+        setStatus('');
+        showToast('Load messages failed: ' + e.message);
       }
     }
+
+    // Optimistic send
     async function sendMessage() {
-      if (!currentPeer) return;
+      if (!currentPeer || !me) return;
       const text = messageInput.value.trim();
       if (!text) return;
+      // create optimistic message
+      const tmpId = 'tmp-' + Date.now() + '-' + Math.random().toString(36).slice(2,7);
+      const tmpMsg = {
+        id: tmpId,
+        senderId: me.id,
+        receiverId: currentPeer.id,
+        content: text,
+        createdAt: new Date().toISOString(),
+        sending: true
+      };
+      messages.push(tmpMsg);
+      messages = dedupeById(messages);
+      renderMessages();
+      messageInput.value = '';
+      autosizeTextarea();
+
       try {
         const dto = await http('POST', '/api/messages', {
           receiverId: currentPeer.id,
           content: text
         });
-        messageInput.value = '';
-        messages.push(dto);
+        // replace tmp message with server dto
+        messages = messages.map(m => m.id === tmpId ? dto : m);
         messages = dedupeById(messages);
         renderMessages();
       } catch (e) {
-        setStatus('Send failed: ' + e.message);
+        // mark tmp message as failed
+        messages = messages.map(m => m.id === tmpId ? ({ ...m, sending:false, failed:true }) : m);
+        renderMessages();
+        showToast('Send failed: ' + e.message);
       }
     }
+
     async function deleteMessage(id) {
       try {
         await http('DELETE', '/api/messages/' + id);
         messages = messages.filter(m => m.id !== id);
         renderMessages();
       } catch (e) {
-        setStatus('Delete failed: ' + e.message);
+        showToast('Delete failed: ' + e.message);
       }
     }
     async function markRead(ids) {
@@ -796,17 +901,44 @@
     }
 
     // =========================
-    // WEBSOCKET
+    // WEBSOCKET (with reconnect/backoff)
     // =========================
     function connectWS() {
-      const sock = new SockJS(WS_URL);
+      if (!token) return;
+      try { if (stomp && stomp.connected) return; } catch {}
+      try {
+        sock = new SockJS(WS_URL);
+      } catch (e) {
+        scheduleReconnect();
+        return;
+      }
       stomp = Stomp.over(sock);
       stomp.debug = null;
+      sock.onclose = () => {
+        setStatus('WS closed, reconnecting...');
+        scheduleReconnect();
+      };
       stomp.connect(
         { Authorization: 'Bearer ' + token },
-        onWsConnected,
-        (err) => setStatus('WS error: ' + (err && err.body ? err.body : 'disconnected'))
+        () => {
+          onWsConnected();
+          wsBackoff = 500;
+          if (wsReconnectTimer) { clearTimeout(wsReconnectTimer); wsReconnectTimer = null; }
+        },
+        (err) => {
+          setStatus('WS error, reconnecting...');
+          scheduleReconnect();
+        }
       );
+    }
+    function scheduleReconnect() {
+      if (wsReconnectTimer) return;
+      wsBackoff = Math.min(Math.max(500, wsBackoff), wsMaxBackoff);
+      wsReconnectTimer = setTimeout(() => {
+        wsReconnectTimer = null;
+        wsBackoff = Math.min(wsBackoff * 1.8, wsMaxBackoff);
+        connectWS();
+      }, wsBackoff);
     }
     function onWsConnected() {
       setStatus('Connected');
@@ -817,7 +949,17 @@
           (msg.senderId === me.id && msg.receiverId === currentPeer.id) ||
           (msg.senderId === currentPeer.id && msg.receiverId === me.id);
         if (isThisChat) {
-          messages = dedupeById(messages.concat([msg]));
+          // replace any optimistic message that matches (simple heuristic: same content & receiver)
+          let replaced = false;
+          for (let i=0;i<messages.length;i++){
+            const m = messages[i];
+            if (m.sending && m.content === msg.content && m.receiverId === msg.receiverId) {
+              messages[i] = msg;
+              replaced = true;
+              break;
+            }
+          }
+          if (!replaced) messages = dedupeById(messages.concat([msg]));
           renderMessages();
           if (msg.senderId === currentPeer.id && msg.receiverId === me.id && !msg.readAt) {
             markRead([msg.id]);
@@ -850,18 +992,37 @@
     function sendTyping(typing) {
       if (!stomp || !stomp.connected || !currentPeer) return;
       const payload = { toUserId: currentPeer.id, typing: !!typing };
-      stomp.send('/app/typing', {}, JSON.stringify(payload));
+      try { stomp.send('/app/typing', {}, JSON.stringify(payload)); } catch {}
     }
+
+    // =========================
+    // AUTOSIZE TEXTAREA
+    // =========================
+    function autosizeTextarea() {
+      const ta = messageInput;
+      if (!ta) return;
+      ta.style.height = 'auto';
+      const max = Math.min(window.innerHeight * 0.35, 220);
+      ta.style.height = Math.min(ta.scrollHeight, max) + 'px';
+    }
+    (function enableAutosize() {
+      if (!messageInput) return;
+      messageInput.addEventListener('input', () => { autosizeTextarea(); }, { passive: true });
+      messageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+          autosizeTextarea();
+        }
+      });
+      setTimeout(autosizeTextarea, 100);
+    })();
 
     // =========================
     // EVENTS
     // =========================
-    btnSignup.addEventListener('click', async () => {
-      await signup();
-    });
-    btnLogin.addEventListener('click', async () => {
-      await login();
-    });
+    btnSignup.addEventListener('click', async () => { await signup(); });
+    btnLogin.addEventListener('click', async () => { await login(); });
     btnLogout.addEventListener('click', logout);
     searchInput.addEventListener('input', (e) => {
       const q = e.target.value.trim();
@@ -880,11 +1041,9 @@
       if (messageInput._typingT) clearTimeout(messageInput._typingT);
       messageInput._typingT = setTimeout(() => sendTyping(false), 1200);
     });
-    messageInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        sendMessage();
-      }
+    messageInput.addEventListener('focus', () => {
+      // close sidebar on mobile to focus chat
+      closeSidebarIfMobile();
     });
 
     // =========================
@@ -914,7 +1073,9 @@
         mobileOverlay.classList.remove('show');
         mobileOverlay.classList.add('hidden');
       }
+      autosizeTextarea();
     });
   </script>
 </body>
 </html>
+// ...existing code...
