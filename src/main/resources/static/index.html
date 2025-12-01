@@ -1,3 +1,4 @@
+// ...existing code...
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,15 +13,15 @@
       --apple-bg: linear-gradient(135deg, #f5f5f7 0%, #e3e9f7 100%);
       --apple-panel: rgba(255,255,255,0.85);
       --apple-card: rgba(255,255,255,0.7);
-      --apple-accent: #0071e3;
-      --apple-accent-hover: #005bb5;
-      --apple-accent-2: #3b82f6;
-      --apple-danger: #ef4444;
-      --apple-text: #1d1d1f;
-      --apple-muted: #86868b;
+      --accent: #0071e3;
+      --accent-hover: #005bb5;
+      --accent-2: #3b82f6;
+      --danger: #ef4444;
+      --text: #1d1d1f;
+      --muted: #86868b;
       --mine: #0071e3;
       --theirs: #e5e5ea;
-      --apple-border: #d2d2d7;
+      --border: #d2d2d7;
       --radius: 18px;
       --shadow: 0 4px 24px rgba(0,0,0,0.10);
       --blur: 18px;
@@ -30,52 +31,47 @@
       margin: 0;
       font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--apple-bg);
-      color: var(--apple-text);
+      color: var(--text);
       min-height: 100vh;
       transition: background 0.5s;
     }
     .apple-nav {
       background: var(--apple-panel);
       box-shadow: var(--shadow);
-      padding: 0 32px;
+      padding: 0 20px;
       height: 56px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       font-size: 22px;
       font-weight: 700;
-      border-bottom: 1px solid var(--apple-border);
+      border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 40;
       backdrop-filter: blur(var(--blur));
       letter-spacing: -0.03em;
     }
     .apple-logo {
-      color: var(--apple-accent);
+      color: var(--accent);
       font-family: inherit;
       font-weight: 700;
-      font-size: 28px;
+      font-size: 20px;
       letter-spacing: -0.04em;
       text-shadow: 0 2px 8px #0071e322;
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .apple-logo .logo-box {
-      display: inline-block;
-      width: 32px;
-      height: 32px;
-      background: var(--apple-accent);
-      color: #fff;
-      border-radius: 8px;
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
       font-size: 22px;
-      font-weight: 900;
-      text-align: center;
-      line-height: 32px;
-      letter-spacing: 0;
-      margin-right: 8px;
-      box-shadow: 0 2px 8px #0071e322;
+      cursor: pointer;
+      color: var(--muted);
     }
+
     #app {
       display: grid;
       grid-template-columns: 340px 1fr;
@@ -88,16 +84,17 @@
     }
     .sidebar {
       background: transparent;
-      border-right: 1px solid var(--apple-border);
+      border-right: 1px solid var(--border);
       padding: 32px 24px 24px 24px;
       overflow-y: auto;
       min-height: calc(100vh - 56px);
+      transition: transform 0.25s ease;
     }
     .card {
       background: var(--apple-card);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      border: 1px solid var(--apple-border);
+      border: 1px solid var(--border);
       padding: 24px;
       margin-bottom: 32px;
       transition: box-shadow 0.2s, background 0.3s;
@@ -114,62 +111,47 @@
     }
     .me-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .me-username { font-weight: 700; font-size: 18px; }
-    .me-email { color: var(--apple-muted); font-size: 13px; }
+    .me-email { color: var(--muted); font-size: 13px; }
     .field { margin: 12px 0; }
-    .field label { display: block; font-size: 13px; color: var(--apple-muted); margin-bottom: 6px; }
+    .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
     .field input {
-      width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--apple-border);
-      background: #f9f9fa; color: var(--apple-text); font-size: 16px;
+      width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: #f9f9fa; color: var(--text); font-size: 16px;
       transition: border 0.2s, box-shadow 0.2s;
       box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
-    .field input:focus { border-color: var(--apple-accent); outline: none; box-shadow: 0 2px 8px #0071e322;}
+    .field input:focus { border-color: var(--accent); outline: none; box-shadow: 0 2px 8px #0071e322;}
     .btn {
       border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; color: #fff;
-      background: var(--apple-accent-2); font-size: 16px; font-weight: 500;
+      background: var(--accent-2); font-size: 16px; font-weight: 500;
       transition: background 0.15s, box-shadow 0.2s, transform 0.2s;
       margin-top: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       position: relative;
       overflow: hidden;
     }
-    .btn.primary { background: var(--apple-accent); }
-    .btn.primary:hover { background: var(--apple-accent-hover); transform: translateY(-2px) scale(1.04);}
-    .btn.danger { background: var(--apple-danger); }
+    .btn.primary { background: var(--accent); }
+    .btn.primary:hover { background: var(--accent-hover); transform: translateY(-2px) scale(1.04);}
+    .btn.danger { background: var(--danger); }
     .btn.ghost {
-      background: transparent; border: 1px solid var(--apple-border); color: var(--apple-muted);
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
     }
     .btn.small { font-size: 13px; padding: 7px 12px; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn::after {
-      content: "";
-      position: absolute;
-      left: 50%; top: 50%;
-      width: 0; height: 0;
-      background: rgba(255,255,255,0.2);
-      border-radius: 100%;
-      transform: translate(-50%,-50%);
-      transition: width 0.3s, height 0.3s;
-      z-index: 0;
-    }
-    .btn:active::after {
-      width: 120%; height: 120%;
-      transition: 0s;
-    }
-    .divider { text-align: center; color: var(--apple-muted); font-size: 13px; margin: 12px 0; }
+    .divider { text-align: center; color: var(--muted); font-size: 13px; margin: 12px 0; }
     .list { display: grid; gap: 10px; }
     .user-item {
-      background: #f9f9fa; border: 1px solid var(--apple-border); padding: 14px; border-radius: 12px; cursor: pointer;
+      background: #f9f9fa; border: 1px solid var(--border); padding: 14px; border-radius: 12px; cursor: pointer;
       transition: border 0.2s, box-shadow 0.2s, background 0.2s;
       font-size: 16px;
       animation: fadeinUp 0.5s;
     }
-    .user-item:hover { border-color: var(--apple-accent); box-shadow: 0 2px 8px rgba(0,0,0,0.04); background: #e3e9f7;}
+    .user-item:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.04); background: #e3e9f7;}
     .user-name { font-weight: 600; }
     .main { display: grid; grid-template-rows: auto 1fr auto; background: transparent;}
     .chat-header {
-      border-bottom: 1px solid var(--apple-border);
-      padding: 24px 32px 16px 32px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
       background: var(--apple-panel);
       font-size: 20px;
       font-weight: 600;
@@ -177,12 +159,13 @@
       box-shadow: var(--shadow);
       position: sticky;
       top: 0;
-      z-index: 5;
+      z-index: 20;
       backdrop-filter: blur(var(--blur));
     }
-    .chat-title { font-weight: 700; font-size: 20px; }
-    .typing { color: var(--apple-muted); font-size: 14px; margin-top: 4px; }
-    .status { color: var(--apple-muted); font-size: 14px; }
+    .chat-header .left { display:flex; align-items:center; gap:12px; }
+    .chat-title { font-weight: 700; font-size: 18px; }
+    .typing { color: var(--muted); font-size: 14px; margin-top: 4px; }
+    .status { color: var(--muted); font-size: 14px; }
     .messages-area {
       padding: 24px 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
       background: transparent;
@@ -202,46 +185,46 @@
       backdrop-filter: blur(4px);
     }
     .msg.mine { align-self: flex-end; background: var(--mine); color: #fff; }
-    .msg.theirs { align-self: flex-start; background: var(--theirs); color: var(--apple-text);}
+    .msg.theirs { align-self: flex-start; background: var(--theirs); color: var(--text);}
     .msg .meta { font-size: 12px; color: #e2f1ff; opacity: 0.9; display: flex; gap: 8px; align-items: center; }
     .msg.mine .meta { color: #d2eaff; }
-    .msg.theirs .meta { color: var(--apple-muted);}
+    .msg.theirs .meta { color: var(--muted);}
     .msg .actions {
       position: absolute; top: -8px; right: -8px; display: none;
     }
     .msg:hover .actions { display: flex; }
     .msg .action-btn {
-      background: #0008; border: 1px solid var(--apple-border); color: #fff; font-size: 12px;
+      background: #0008; border: 1px solid var(--border); color: #fff; font-size: 12px;
       padding: 4px 8px; border-radius: 10px; cursor: pointer;
       box-shadow: 0 1px 2px rgba(0,0,0,0.08);
     }
     .msg .content { white-space: pre-wrap; }
     .composer {
-      display: grid; grid-template-columns: 1fr auto auto; gap: 12px; padding: 24px 32px; border-top: 1px solid var(--apple-border);
+      display: grid; grid-template-columns: 1fr auto auto; gap: 12px; padding: 24px 32px; border-top: 1px solid var(--border);
       background: var(--apple-panel); border-radius: var(--radius) var(--radius) 0 0; box-shadow: var(--shadow);
       animation: fadeinUp 0.7s;
       position: relative;
       backdrop-filter: blur(var(--blur));
     }
     .composer input {
-      width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--apple-border);
-      background: #f9f9fa; color: var(--apple-text); font-size: 16px;
+      width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: #f9f9fa; color: var(--text); font-size: 16px;
       transition: border 0.2s;
     }
-    .composer input:focus { border-color: var(--apple-accent); outline: none; }
+    .composer input:focus { border-color: var(--accent); outline: none; }
     .emoji-picker {
       position: absolute;
       bottom: 60px;
       right: 40px;
       background: #fff;
-      border: 1px solid var(--apple-border);
+      border: 1px solid var(--border);
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       padding: 10px;
       display: none;
       z-index: 100;
-      width: 220px;
-      max-height: 180px;
+      width: 260px;
+      max-height: 220px;
       overflow-y: auto;
       font-size: 22px;
       gap: 8px;
@@ -269,7 +252,7 @@
     .welcome-title {
       font-size: 60px;
       font-weight: 800;
-      color: var(--apple-accent);
+      color: var(--accent);
       margin-bottom: 18px;
       margin-top: 60px;
       letter-spacing: -0.03em;
@@ -278,7 +261,7 @@
     }
     .welcome-desc {
       font-size: 24px;
-      color: var(--apple-muted);
+      color: var(--muted);
       margin-bottom: 32px;
       animation: fadeinUp 1.5s;
       text-align: center;
@@ -289,13 +272,46 @@
       gap: 18px;
       animation: fadeinUp 1.7s;
     }
+
+    /* MOBILE / RESPONSIVE */
+    .mobile-overlay {
+      position: fixed;
+      inset: 56px 0 0 0;
+      background: rgba(0,0,0,0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 30;
+    }
+    .mobile-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
     @media (max-width: 900px) {
-      #app { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
-      .main { border-radius: 0; }
-      .chat-header, .messages-area, .composer { padding: 16px; }
+      #app { grid-template-columns: 1fr; max-width: 100%; }
+      .sidebar {
+        position: fixed;
+        left: -320px;
+        top: 56px;
+        width: 300px;
+        height: calc(100vh - 56px);
+        background: var(--apple-card);
+        border-right: 1px solid var(--border);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+        z-index: 35;
+        padding: 20px;
+      }
+      .sidebar.open { left: 0; }
+      .mobile-menu-btn { display: inline-block; }
+      .chat-header { padding: 12px 16px; }
+      .chat-title { font-size: 18px; }
+      .messages-area { padding: 16px; min-height: 60vh; }
+      .composer { padding: 12px 16px; grid-template-columns: 1fr auto auto; }
+      .emoji-picker { right: 16px; bottom: 70px; width: 200px; max-height: 180px; }
+      .user-item { font-size: 15px; padding: 12px; }
       .welcome-title { font-size: 38px; }
       .welcome-desc { font-size: 18px; }
+      .apple-nav { padding: 0 12px; }
     }
     .hidden { display: none !important; }
     ::-webkit-scrollbar {
@@ -303,15 +319,22 @@
       background: var(--apple-bg);
     }
     ::-webkit-scrollbar-thumb {
-      background: var(--apple-border);
+      background: var(--border);
       border-radius: 8px;
     }
   </style>
 </head>
 <body>
   <nav class="apple-nav">
-    <span class="apple-logo">QuickChat</span>
+    <div class="left" style="display:flex;align-items:center;gap:12px;">
+      <button id="btn-toggle-sidebar" class="mobile-menu-btn" aria-label="Open menu">☰</button>
+      <span class="apple-logo">QuickChat</span>
+    </div>
+    <div style="font-size:13px;color:var(--muted);font-weight:500;">Fast & simple messaging</div>
   </nav>
+
+  <div id="mobile-overlay" class="mobile-overlay hidden"></div>
+
   <div id="welcome-section" class="welcome-section">
     <div class="welcome-title">Welcome to QuickChat</div>
     <div class="welcome-desc">Connect, chat, and share emojis instantly.<br>Start by logging in or creating an account.</div>
@@ -320,9 +343,10 @@
       <button id="btn-show-signup" class="btn">Signup</button>
     </div>
   </div>
+
   <div id="app" class="hidden">
     <!-- LEFT SIDEBAR -->
-    <aside class="sidebar">
+    <aside id="sidebar" class="sidebar">
       <div id="login-section" class="card hidden">
         <h3 style="font-weight:600;font-size:20px;margin-bottom:8px;">Login</h3>
         <div class="field">
@@ -353,6 +377,7 @@
         <button id="btn-signup" class="btn primary">Create account</button>
         <div class="divider"><button id="btn-switch-login" class="btn ghost small">Back to login</button></div>
       </div>
+
       <div id="me-section" class="card hidden">
         <div class="me-row">
           <div>
@@ -368,27 +393,31 @@
         <div id="users-list" class="list"></div>
       </div>
     </aside>
+
     <!-- MAIN CHAT AREA -->
     <main class="main">
       <header class="chat-header">
-        <div>
+        <div class="left">
           <div id="chat-title" class="chat-title">Select a user</div>
           <div id="typing-indicator" class="typing hidden">typing…</div>
         </div>
         <div id="status" class="status"></div>
       </header>
+
       <section class="messages-area">
         <button id="btn-load-more" class="btn ghost small hidden">Load more</button>
         <div id="messages" class="messages"></div>
       </section>
+
       <footer class="composer">
         <input id="message-input" type="text" placeholder="Type a message…" disabled />
-        <button id="btn-emoji" class="btn ghost" title="Insert emoji" style="padding:0 12px;font-size:22px;">🫧</button>
+        <button id="btn-emoji" class="btn ghost" title="Insert emoji" style="padding:0 12px;font-size:22px;">😊</button>
         <button id="btn-send" class="btn primary" disabled>Send</button>
         <div id="emoji-picker" class="emoji-picker"></div>
       </footer>
     </main>
   </div>
+
   <script>
     // =========================
     // CONFIG
@@ -438,11 +467,19 @@
     const btnSend        = el('btn-send');
     const emojiBtn       = el('btn-emoji');
     const emojiPicker    = el('emoji-picker');
+    const sidebar        = el('sidebar');
+    const btnToggleSidebar = el('btn-toggle-sidebar');
+    const mobileOverlay  = el('mobile-overlay');
+
     // =========================
-    // EMOJI PICKER (Apple style emojis)
+    // EMOJI PICKER (original set)
     // =========================
     const EMOJIS = [
-      "😀","😃","😄","😁","😆","😅","😂","🤣","🥲","😊","😇","🙂","🙃","😉","😌","😍","🥰","😘","😗","😙","😚","😋","😛","😝","😜","🤪","🤨","🧐","🤓","😎","🥸","🤩","🥳","😏","😒","😞","😔","😟","😕","🙁","☹️","😣","😖","😫","😩","🥺","😢","😭","😤","😠","😡","🤬","🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","🤗","🤔","🤭","🤫","🤥","😶","😐","😑","😬","🙄","😯","😦","😧","😮","😲","🥱","😴","🤤","😪","😵","🤐","🥴","🤢","🤮","🤧","😷","🤒","🤕","🤑","🤠","😈","👿","👹","👺","🤡","💩","👻","💀","☠️","👽","👾","🤖"
+      "😀","😁","😂","🤣","😃","😄","😅","😆","😉","😊","😋","😎","😍","😘","🥰","😗","😙","😚",
+      "🙂","🤗","🤩","🤔","🤨","😐","😑","😶","🙄","😏","😣","😥","😮","🤐","😯","😪","😫","🥱",
+      "😴","😌","😛","😜","😝","🤤","😒","😓","😔","😕","🙃","🤑","😲","☹️","🙁","😖","😞","😟",
+      "😤","😢","😭","😦","😧","😨","😩","🤯","😬","😰","😱","🥵","🥶","😳","🤪","😵","😡","😠",
+      "🤬","😷","🤒","🤕","🤢","🤮","🥴","😇","🥳","🥺","🤠","🤡","🤥","🤫","🤭","🧐"
     ];
     function renderEmojiPicker() {
       emojiPicker.innerHTML = '';
@@ -470,6 +507,29 @@
         emojiPicker.style.display = 'none';
       }
     });
+
+    // =========================
+    // MOBILE SIDEBAR HANDLING
+    // =========================
+    function openSidebar() {
+      sidebar.classList.add('open');
+      mobileOverlay.classList.remove('hidden');
+      mobileOverlay.classList.add('show');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      mobileOverlay.classList.remove('show');
+      mobileOverlay.classList.add('hidden');
+    }
+    btnToggleSidebar.addEventListener('click', () => {
+      if (sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
+    });
+    mobileOverlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar automatically when picking a user (mobile)
+    function closeSidebarIfMobile() {
+      if (window.innerWidth <= 900) closeSidebar();
+    }
 
     // =========================
     // PAGE FLOW
@@ -551,6 +611,7 @@
       for (const m of arr) map.set(m.id, m);
       return Array.from(map.values()).sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt));
     }
+
     // =========================
     // RENDERING
     // =========================
@@ -559,7 +620,7 @@
       list.forEach(u => {
         const item = document.createElement('div');
         item.className = 'user-item';
-        item.onclick = () => selectPeer(u.id, u.username);
+        item.onclick = () => { selectPeer(u.id, u.username); closeSidebarIfMobile(); };
         const name = document.createElement('div');
         name.className = 'user-name';
         name.textContent = u.username;
@@ -603,6 +664,7 @@
       });
       scrollToBottom();
     }
+
     // =========================
     // BACKEND INTEGRATION
     // =========================
@@ -616,6 +678,7 @@
         });
         saveToken(resp.token);
         await onAuthenticated();
+        closeSidebarIfMobile();
       } catch (e) {
         setStatus('Signup failed: ' + e.message);
       }
@@ -629,6 +692,7 @@
         });
         saveToken(resp.token);
         await onAuthenticated();
+        closeSidebarIfMobile();
       } catch (e) {
         setStatus('Login failed: ' + e.message);
       }
@@ -659,6 +723,7 @@
       meSection.classList.add('hidden');
       showLogin();
       setStatus('Logged out');
+      closeSidebar();
     }
     async function searchUsers(q) {
       const list = await http('GET', '/api/users/search?q=' + encodeURIComponent(q || ''));
@@ -729,6 +794,7 @@
         renderMessages();
       } catch {}
     }
+
     // =========================
     // WEBSOCKET
     // =========================
@@ -786,6 +852,7 @@
       const payload = { toUserId: currentPeer.id, typing: !!typing };
       stomp.send('/app/typing', {}, JSON.stringify(payload));
     }
+
     // =========================
     // EVENTS
     // =========================
@@ -819,6 +886,7 @@
         sendMessage();
       }
     });
+
     // =========================
     // BOOT
     // =========================
@@ -838,6 +906,15 @@
         showWelcome();
       }
     })();
+
+    // Close sidebar when resizing to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900) {
+        sidebar.classList.remove('open');
+        mobileOverlay.classList.remove('show');
+        mobileOverlay.classList.add('hidden');
+      }
+    });
   </script>
 </body>
 </html>
